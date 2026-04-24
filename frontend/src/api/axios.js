@@ -25,12 +25,13 @@ api.interceptors.response.use(
 );
 
 // Helper — build full URL for uploaded files.
-// New uploads: Cloudinary returns full https://res.cloudinary.com/... URL → return as-is.
-// Old uploads: relative /uploads/... path → prepend Render backend URL.
-export const fileUrl = (path) => {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;   // already absolute (Cloudinary)
-  return `${BASE}${path}`;                    // relative → prepend backend origin
+// data:image/... base64  → pass through as-is (submissions)
+// https://...            → pass through as-is
+// /uploads/...           → prepend Render backend URL (notes)
+export const fileUrl = (p) => {
+  if (!p) return null;
+  if (p.startsWith('data:') || p.startsWith('http')) return p;
+  return `${BASE}${p}`;
 };
 
 export default api;

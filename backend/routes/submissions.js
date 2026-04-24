@@ -1,30 +1,30 @@
-const router   = require('express').Router();
-const auth     = require('../middleware/auth');
-const multer   = require('multer');
-const path     = require('path');
+const router       = require('express').Router();
+const auth         = require('../middleware/auth');
+const multer       = require('multer');
+const path         = require('path');
 const Submission   = require('../models/Submission');
 const User         = require('../models/User');
 const Task         = require('../models/Task');
 const Notification = require('../models/Notification');
-const { updateProgress }     = require('../utils/userProgress');
-const { submissionStorage }  = require('../utils/cloudinary');
+const { updateProgress } = require('../utils/userProgress');
 
-const IMAGE_MAX = 10 * 1024 * 1024; //  10 MB
-const VIDEO_MAX = 50 * 1024 * 1024; //  50 MB
+const IMAGE_MAX  = 10 * 1024 * 1024; // 10 MB
 const IMAGE_EXTS = /\.(jpg|jpeg|png|gif|webp)$/i;
 const VIDEO_EXTS = /\.(mp4|mov|avi|mkv|webm|3gp)$/i;
 
+// Store file in memory → convert to base64 → save in MongoDB
+// No disk, no external service, works on Render permanently
 const upload = multer({
-  storage: submissionStorage,
-  limits: { fileSize: VIDEO_MAX },
+  storage: multer.memoryStorage(),
+  limits:  { fileSize: IMAGE_MAX },
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname);
     if (IMAGE_EXTS.test(ext) || VIDEO_EXTS.test(ext)) return cb(null, true);
-    cb(new Error('Only image or video files are allowed'));
+    cb(new Error('Only image files are allowed'));
   },
 });
 
-// GET submissions (student: own; teacher: all)
+// GET submissions
 router.get('/', auth, async (req, res) => {
   try {
     let filter = {};
@@ -44,26 +44,22 @@ router.get('/', auth, async (req, res) => {
 // POST create submission (student)
 router.post('/', auth, upload.single('image'), async (req, res) => {
   try {
-    // Per-type size enforcement
-    if (req.file) {
-      const ext = path.extname(req.file.originalname);
-      if (IMAGE_EXTS.test(ext) && req.file.size > IMAGE_MAX)
-        return res.status(400).json({ message: 'Image must be under 10 MB' });
-      if (VIDEO_EXTS.test(ext) && req.file.size > VIDEO_MAX)
-        return res.status(400).json({ message: 'Video must be under 50 MB' });
-    }
-
     const { taskId, description } = req.body;
 
-    // Cloudinary returns req.file.path = full https://res.cloudinary.com/... URL
-    const imageUrl = req.file ? req.file.path : '';
+    // Convert buffer → base64 data URL → stored directly in MongoDB
+    // Works forever, no external service needed
+    let imageUrl = '';
+    if (req.file) {
+      const b64  = req.file.buffer.toString('base64');
+      imageUrl   = `data:${req.file.mimetype};base64,${b64}`;
+    }
 
     const sub = await Submission.create({
       student: req.user.id,
-      task: taskId,
+      task:    taskId,
       description,
       imageUrl,
-      status: 'pending',
+      status:  'pending',
     });
 
     // Notify teacher
