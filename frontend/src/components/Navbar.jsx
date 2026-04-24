@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bell, ChevronDown, LogOut, Flame, LayoutDashboard, CheckCircle, XCircle, Clock, Zap, UserCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
+import api, { fileUrl } from '../api/axios';
 
 function NotifIcon({ type }) {
   if (type === 'submission_approved') return <CheckCircle size={12} className="text-eco-400 shrink-0" />;
@@ -143,7 +143,7 @@ export default function Navbar() {
                 <div className="w-5 h-5 rounded-md overflow-hidden flex items-center justify-center text-[10px] font-bold text-white shrink-0"
                   style={{ background: user.avatar ? 'transparent' : 'rgba(22,163,74,0.25)' }}>
                   {user.avatar
-                    ? <img src={`http://localhost:5000${user.avatar}`} alt={user.name} className="w-full h-full object-cover" onError={e => e.target.style.display='none'} />
+                    ? <img src={fileUrl(user.avatar)} alt={user.name} className="w-full h-full object-cover" onError={e => e.target.style.display='none'} />
                     : user.name?.[0]?.toUpperCase()
                   }
                 </div>

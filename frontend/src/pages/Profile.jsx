@@ -8,7 +8,7 @@ import {
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
+import api, { fileUrl } from '../api/axios';
 
 // ── Avatar component — shows image or initials fallback ───────
 function Avatar({ src, name, size = 96, editable = false, onEdit }) {
@@ -182,7 +182,7 @@ export default function Profile() {
   const avatarSrc = avatarPreview
     ? avatarPreview
     : profile?.avatar
-    ? `http://localhost:5000${profile.avatar}`
+    ? fileUrl(profile.avatar)
     : null;
 
   const roleBadge = profile?.role === 'teacher'

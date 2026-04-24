@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { fileUrl } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { LayoutDashboard, BookOpen, Leaf, Trophy, BarChart2, Inbox, Star, Flame, Zap } from 'lucide-react';
 
@@ -62,7 +63,7 @@ export default function Sidebar() {
                 }}>
                 {user?.avatar ? (
                   <img
-                    src={`http://localhost:5000${user.avatar}`}
+                    src={fileUrl(user.avatar)}
                     alt={user?.name}
                     className="w-full h-full object-cover"
                     onError={e => { e.target.style.display = 'none'; }}
