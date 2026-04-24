@@ -77,17 +77,19 @@ export default function Navbar() {
               <span className="font-mono font-semibold text-orange-400">{user.streak || 0}</span>
             </div>
 
-            {/* Level + XP bar */}
-            <div className="hidden lg:flex flex-col items-end gap-0.5">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] font-mono text-white/40">Lv.{user.level || 1}</span>
-                <Zap size={10} className="text-eco-400" />
-                <span className="text-[11px] font-mono text-white/40">{user.xp || 0} XP</span>
+            {/* Level + XP bar — only for students */}
+            {user?.role !== 'teacher' && (
+              <div className="hidden lg:flex flex-col items-end gap-0.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-mono text-white/40">Lv.{user.level || 1}</span>
+                  <Zap size={10} className="text-eco-400" />
+                  <span className="text-[11px] font-mono text-white/40">{user.xp || 0} XP</span>
+                </div>
+                <div className="w-24 h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${xpPct}%`, background: 'var(--accent)' }} />
+                </div>
               </div>
-              <div className="w-24 h-0.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${xpPct}%`, background: 'var(--accent)' }} />
-              </div>
-            </div>
+            )}
 
             {/* Notifications */}
             <div className="relative" ref={notifRef}>

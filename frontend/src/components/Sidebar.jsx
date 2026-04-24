@@ -86,10 +86,12 @@ export default function Sidebar() {
                 <Flame size={10} className="text-orange-400" />
                 <span className="font-mono text-[11px]">{user?.streak || 0}d</span>
               </span>
-              <span className="flex items-center gap-1 text-[11px]">
-                <Zap size={10} className="text-eco-400" />
-                <span className="font-mono text-[11px]">Lv{user?.level || 1}</span>
-              </span>
+              {user?.role !== 'teacher' && (
+                <span className="flex items-center gap-1 text-[11px]">
+                  <Zap size={10} className="text-eco-400" />
+                  <span className="font-mono text-[11px]">Lv{user?.level || 1}</span>
+                </span>
+              )}
             </div>
           </div>
         </div>
