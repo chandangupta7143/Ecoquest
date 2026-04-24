@@ -8,7 +8,7 @@ import {
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
+import api, { fileUrl } from '../api/axios';
 
 const CLASSES = ['Class 6','Class 7','Class 8','Class 9','Class 10','Class 11','Class 12','College Year 1','College Year 2','College Year 3'];
 const CATEGORIES = ['waste','water','energy','cleanliness','plantation'];
@@ -473,7 +473,7 @@ export default function TeacherDashboard() {
                       {expandedSub === sub._id && (
                         <div className="px-4 pb-4 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
                           <div className="grid sm:grid-cols-2 gap-3">
-                            {sub.imageUrl && <img src={sub.imageUrl} alt="proof" className="w-full h-40 object-cover rounded-xl" />}
+                            {sub.imageUrl && <img src={fileUrl(sub.imageUrl)} alt="proof" className="w-full h-40 object-cover rounded-xl" />}
                             <div>
                               <p className="text-[11px] mb-1" style={{ color: 'var(--text-3)' }}>Description</p>
                               <p className="text-[13px]" style={{ color: 'var(--text-2)' }}>{sub.description}</p>
@@ -768,7 +768,10 @@ export default function TeacherDashboard() {
                                 </div>
                                 <div className="flex items-center gap-2 shrink-0">
                                   {(note.fileUrl || note.externalUrl) && (
-                                    <a href={note.fileUrl || note.externalUrl} target="_blank" rel="noopener noreferrer"
+                                    <a
+                                      href={note.fileUrl ? fileUrl(note.fileUrl) : note.externalUrl}
+                                      target="_blank" rel="noopener noreferrer"
+                                      download={note.type === 'pdf' ? (note.fileOriginalName || true) : undefined}
                                       className="p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors" style={{ color: 'var(--text-3)' }}>
                                       {note.type === 'pdf' ? <Download size={12} /> : <ExternalLink size={12} />}
                                     </a>

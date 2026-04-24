@@ -4,7 +4,7 @@ import { BookOpen, ChevronRight, FileText, Star, ArrowRight, ClipboardList, Exte
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
+import api, { fileUrl } from '../api/axios';
 
 const defaultConcepts = [
   'This chapter covers important environmental concepts.',
@@ -219,29 +219,36 @@ export default function LearnPage() {
                                 <div>
                                   <h3 className="text-[12px] font-semibold mb-2.5" style={{ color: 'var(--text-2)' }}>Study Materials</h3>
                                   <div className="space-y-2">
-                                    {chapterUploadedNotes.map(note => (
-                                      <a key={note._id}
-                                        href={note.fileUrl || note.externalUrl}
-                                        target="_blank" rel="noopener noreferrer"
-                                        className="flex items-center justify-between rounded-xl p-3 transition-colors"
-                                        style={{ background: 'var(--tile)', border: '1px solid var(--border)' }}
-                                        onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border-md)'}
-                                        onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
-                                        <div className="flex items-center gap-3">
-                                          <span className="text-base">{note.type === 'pdf' ? '📄' : note.type === 'video' ? '🎥' : '🔗'}</span>
-                                          <div>
-                                            <p className="text-[13px] font-medium">{note.title}</p>
-                                            <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>
-                                              {note.type === 'pdf' ? note.fileOriginalName || 'PDF Document' : note.type === 'video' ? 'Video' : 'Link'}
-                                            </p>
+                                    {chapterUploadedNotes.map(note => {
+                                      // Build full absolute URL — relative /uploads/... paths must point to Render backend
+                                      const href = note.fileUrl
+                                        ? fileUrl(note.fileUrl)          // e.g. https://ecoquest-bx2q.onrender.com/uploads/note-abc.pdf
+                                        : note.externalUrl || '#';       // external link / video URL as-is
+                                      return (
+                                        <a key={note._id}
+                                          href={href}
+                                          target="_blank" rel="noopener noreferrer"
+                                          download={note.type === 'pdf' ? (note.fileOriginalName || true) : undefined}
+                                          className="flex items-center justify-between rounded-xl p-3 transition-colors"
+                                          style={{ background: 'var(--tile)', border: '1px solid var(--border)' }}
+                                          onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border-md)'}
+                                          onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
+                                          <div className="flex items-center gap-3">
+                                            <span className="text-base">{note.type === 'pdf' ? '📄' : note.type === 'video' ? '🎥' : '🔗'}</span>
+                                            <div>
+                                              <p className="text-[13px] font-medium">{note.title}</p>
+                                              <p className="text-[11px]" style={{ color: 'var(--text-3)' }}>
+                                                {note.type === 'pdf' ? note.fileOriginalName || 'PDF Document' : note.type === 'video' ? 'Video' : 'Link'}
+                                              </p>
+                                            </div>
                                           </div>
-                                        </div>
-                                        {note.type === 'pdf'
-                                          ? <Download size={13} style={{ color: 'var(--text-3)' }} />
-                                          : <ExternalLink size={13} style={{ color: 'var(--text-3)' }} />
-                                        }
-                                      </a>
-                                    ))}
+                                          {note.type === 'pdf'
+                                            ? <Download size={13} style={{ color: 'var(--text-3)' }} />
+                                            : <ExternalLink size={13} style={{ color: 'var(--text-3)' }} />
+                                          }
+                                        </a>
+                                      );
+                                    })}
                                   </div>
                                 </div>
                               )}

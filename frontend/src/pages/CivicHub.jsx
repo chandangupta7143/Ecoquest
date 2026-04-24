@@ -3,7 +3,7 @@ import { Upload, CheckCircle, Clock, XCircle, Leaf, Droplets, Zap, Recycle, Spar
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
+import api, { fileUrl } from '../api/axios';
 
 const catIcon = { waste: Recycle, water: Droplets, energy: Zap, cleanliness: Sparkles, plantation: TreePine };
 const catEmoji = { waste: '♻️', water: '💧', energy: '⚡', cleanliness: '🧹', plantation: '🌱' };
@@ -116,7 +116,7 @@ function TeacherView() {
                 <div className="px-4 pb-4 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
                   <div className="grid sm:grid-cols-2 gap-3">
                     {sub.imageUrl && (
-                      <img src={sub.imageUrl} alt="proof" className="w-full h-40 object-cover rounded-xl" />
+                      <img src={fileUrl(sub.imageUrl)} alt="proof" className="w-full h-40 object-cover rounded-xl" />
                     )}
                     <div>
                       <p className="text-[11px] mb-1" style={{ color: 'var(--text-3)' }}>What they did</p>
@@ -148,7 +148,7 @@ function TeacherView() {
                 <span className="text-[12px]" style={{ color: 'var(--text-3)' }}>{reviewModal.sub.task?.title}</span>
               </div>
               {reviewModal.sub.imageUrl && (
-                <img src={reviewModal.sub.imageUrl} alt="proof" className="w-full h-36 object-cover rounded-lg mb-2" />
+                <img src={fileUrl(reviewModal.sub.imageUrl)} alt="proof" className="w-full h-36 object-cover rounded-lg mb-2" />
               )}
               <p className="text-[13px]" style={{ color: 'var(--text-2)' }}>{reviewModal.sub.description}</p>
             </div>
@@ -312,7 +312,7 @@ function StudentView() {
               <div key={sub._id} className="flex items-center gap-3 rounded-xl p-3"
                 style={{ background: 'var(--tile)', border: '1px solid var(--border)' }}>
                 {sub.imageUrl && (
-                  <img src={sub.imageUrl} alt="proof" className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                  <img src={fileUrl(sub.imageUrl)} alt="proof" className="w-10 h-10 rounded-lg object-cover shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-medium truncate">{sub.task?.title || 'Task'}</p>
